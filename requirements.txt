@@ -1,0 +1,2 @@
+jsbeautifier>=1.15.1
+pytest>=7.0.0
