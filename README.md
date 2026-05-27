@@ -2,8 +2,8 @@
 
 HAR-based JavaScript recon automation for bug bounty hunters.
 
-Feed it a HAR file. Get organized output split by bug class — endpoints,
-secrets, triage categories, and live API key validation — all in one run.
+Feed it a HAR file. Get organized output split by bug class - endpoints,
+secrets, triage categories, and live API key validation, all in one run.
 
 ---
 
