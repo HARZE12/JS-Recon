@@ -19,12 +19,17 @@ def extract_js_from_har(har_path: str) -> list[dict]:
 
     results = []
     for entry in data.get("log", {}).get("entries", []):
+        url = entry.get("request", {}).get("url", "unknown")
+
+        # skip data URIs — they are inline blobs, not fetchable JS files
+        if url.startswith("data:"):
+            continue
+
         mime = entry.get("response", {}).get("content", {}).get("mimeType", "")
         mime_base = mime.split(";")[0].strip().lower()
         if mime_base not in JS_MIME_TYPES:
             continue
         content = entry.get("response", {}).get("content", {}).get("text", "")
-        url = entry.get("request", {}).get("url", "unknown")
         if content:
             results.append({"url": url, "content": content})
 

@@ -185,6 +185,42 @@ production code sometimes left other things in that should not be there.
 
 ---
 
+## Why not just use the individual tools?
+
+JS-Recon wraps LinkFinder, SecretFinder, trufflehog, and prettier into a
+single pipeline. Here is what you get compared to running them manually.
+
+| Capability | JS-Recon | LinkFinder | SecretFinder | trufflehog | prettier |
+|---|---|---|---|---|---|
+| **Takes a HAR file as input** | ✅ Auto-extracts all JS | ❌ One file or URL | ❌ One file | ❌ Git repo or file | ❌ Not a security tool |
+| **Beautifies minified JS before scanning** | ✅ jsbeautifier + prettier | ❌ Scans raw/minified | ❌ Scans raw/minified | ❌ Scans raw/minified | ✅ (manual step only) |
+| **Endpoint discovery** | ✅ Wraps LinkFinder, per-file output | ✅ Core feature | ❌ | ❌ | ❌ |
+| **Pattern-based secret scanning** | ✅ Wraps SecretFinder | ❌ | ✅ Core feature | ✅ | ❌ |
+| **Entropy-based secret scanning** | ✅ Wraps trufflehog | ❌ | ❌ | ✅ Core feature | ❌ |
+| **Live API key validation** | ✅ Google, Stripe, Slack — confirms if key works | ❌ | ❌ | ❌ | ❌ |
+| **Bug-class triage (IDOR, SSRF, XSS…)** | ✅ 13 categories, separate files | ❌ | ❌ | ❌ | ❌ |
+| **Batch processing** | ✅ All JS in HAR at once | ❌ One file at a time | ❌ One file at a time | ✅ Repo-wide | ✅ Glob |
+| **Per-file traceability** | ✅ Endpoints and secrets linked to source file | ❌ Mixed stdout | ❌ Mixed stdout | ⚠️ Needs `--json` | ❌ |
+| **Summary report with severity flags** | ✅ Triage counts + valid key warnings | ❌ stdout only | ❌ stdout only | ⚠️ JSON flag needed | ❌ |
+| **Bug bounty workflow fit** | ✅ Built for HAR-based hunting | ⚠️ Manual chaining needed | ⚠️ Manual chaining needed | ⚠️ Git-focused | ❌ |
+
+**Where the individual tools win over JS-Recon:**
+
+| Tool | Where it beats JS-Recon |
+|---|---|
+| LinkFinder | Faster for a single live URL scan — no HAR required, less overhead |
+| SecretFinder | Lighter if you only need pattern matching on one file |
+| trufflehog | Superior for git history scanning — finds secrets deleted across past commits |
+| prettier | Better formatting quality for code review; JS-Recon uses it as a fallback, not a replacement |
+
+The core difference is workflow. Without JS-Recon you run four separate
+tools, pipe their stdout, deduplicate manually, and organise the output
+yourself. JS-Recon does all of that from a single HAR file and produces
+findings you can act on immediately — especially the live key validation,
+which none of the individual tools do.
+
+---
+
 ## Optional dependencies
 
 All tools below are optional. If one is not installed that step is
